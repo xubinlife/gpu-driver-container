@@ -1,0 +1,41 @@
+name: image-custom
+
+on:
+  workflow_dispatch:
+    inputs:
+      driver_version:
+        default: "470.256.02"
+        required: true
+      dist:
+        default: "24.04"
+        required: true
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_AUTH }}
+
+      - name: Build driver image
+        env:
+          IMAGE_NAME: docker.io/xubinlife/nvidia/driver
+          VERSION: ""
+          PUSH_ON_BUILD: "true"
+          BUILD_MULTI_ARCH_IMAGES: "false"
+        run: |
+          DRIVER_VERSIONS=${{ inputs.driver_version }} \
+          make build-${{ inputs.dist }}-${{ inputs.driver_version }}
+
+          docker push docker.io/xubinlife/nvidia/driver:${{ inputs.driver_version }}-ubuntu{{ inputs.dist }}
