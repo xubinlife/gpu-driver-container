@@ -7,7 +7,7 @@ on:
         default: "470.256.02"
         required: true
       dist:
-        default: "24.04"
+        default: "ubuntu24.04"
         required: true
 
 jobs:
@@ -38,4 +38,4 @@ jobs:
           DRIVER_VERSIONS=${{ inputs.driver_version }} \
           make build-${{ inputs.dist }}-${{ inputs.driver_version }}
 
-          docker push docker.io/xubinlife/nvidia/driver:${{ inputs.driver_version }}-ubuntu{{ inputs.dist }}
+          docker push docker.io/xubinlife/nvidia/driver:${{ inputs.driver_version }}-{{ inputs.dist }}
